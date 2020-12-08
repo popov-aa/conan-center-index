@@ -1,5 +1,6 @@
 import glob
 import os
+import shutil
 
 from conans import ConanFile, AutoToolsBuildEnvironment, VisualStudioBuildEnvironment, tools
 from conans.errors import ConanInvalidConfiguration
@@ -330,7 +331,8 @@ class GdalConan(ConanFile):
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
-        os.rename(self.name + "-" + self.version, self._source_subfolder)
+#        os.rename(self.name + "-" + self.version, self._source_subfolder)
+        shutil.move(self.name + "-" + self.version + "/gdal", self._source_subfolder)
 
     def _patch_sources(self):
         for patch in self.conan_data.get("patches", {}).get(self.version, []):
@@ -347,8 +349,8 @@ class GdalConan(ConanFile):
         ]
         if tools.Version(self.version) >= "3.1.0":
             embedded_libs.append(os.path.join("ogr", "ogrsf_frmts", "flatgeobuf", "flatbuffers"))
-        for lib_subdir in embedded_libs:
-            tools.rmdir(os.path.join(self._source_subfolder, lib_subdir))
+#        for lib_subdir in embedded_libs:
+#            tools.rmdir(os.path.join(self._source_subfolder, lib_subdir))
 
     def _edit_nmake_opt(self):
         simd_intrinsics = str(self.options.get_safe("simd_intrinsics", False))
